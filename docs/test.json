@@ -1,0 +1,24 @@
+{
+    "success": true,
+    "message": "Registration successful. Please check your email for verification.",
+    "data": {
+        "user": {
+            "id": 5,
+            "name": "John Doe",
+            "username": "johndoe",
+            "email": "john@example.com",
+            "avatar": null,
+            "phone": "+1234567890",
+            "email_verified": false,
+            "two_factor_enabled": null,
+            "roles": [{ "id": 3, "name": "User", "slug": "user" }],
+            "permissions": [
+                { "id": 5, "name": "View Posts", "slug": "view-posts" },
+                { "id": 6, "name": "Create Posts", "slug": "create-posts" },
+                { "id": 7, "name": "Edit Posts", "slug": "edit-posts" }
+            ]
+        },
+        "token": "1|uv8qB1gbVqbT0HYnpIizQ14PGpyEULWQ5hNFYBSb463d6b6b",
+        "token_type": "Bearer"
+    }
+}

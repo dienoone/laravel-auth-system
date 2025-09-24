@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\Auth\LoginController;
 use App\Http\Controllers\Api\Auth\LogoutController;
 use App\Http\Controllers\Api\Auth\RegisterController;
+use App\Http\Controllers\Api\Auth\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -23,7 +24,13 @@ Route::middleware('auth:sanctum')->prefix('auth')->group(function () {
     Route::post('/logout-all', [LogoutController::class, 'logoutAll']);
 });
 
-// Protected routes
+// Protected user routes
 Route::middleware('auth:sanctum')->group(function () {
-    // User routes will go here
+    // Profile routes
+    Route::prefix('profile')->group(function () {
+        Route::get('/', [ProfileController::class, 'show']);
+        Route::put('/', [ProfileController::class, 'update']);
+        Route::post('/', [ProfileController::class, 'update']); // Alternative for form-data
+        Route::delete('/avatar', [ProfileController::class, 'deleteAvatar']);
+    });
 });

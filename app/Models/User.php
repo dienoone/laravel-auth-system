@@ -3,6 +3,8 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use App\Services\EmailVerificationService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -178,5 +180,13 @@ class User extends Authenticatable
             'last_login_at' => now(),
             'last_login_ip' => $ip
         ]);
+    }
+
+    /**
+     * Send email verification notification
+     */
+    public function sendEmailVerificationNotification(): void
+    {
+        app(EmailVerificationService::class)->sendVerificationEmail($this);
     }
 }

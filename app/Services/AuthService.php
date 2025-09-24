@@ -12,6 +12,13 @@ use Illuminate\Validation\ValidationException;
 
 class AuthService
 {
+  protected EmailVerificationService $emailVerificationService;
+
+  public function __construct(EmailVerificationService $emailVerificationService)
+  {
+    $this->emailVerificationService = $emailVerificationService;
+  }
+
   /**
    * Register a new user
    */
@@ -34,8 +41,8 @@ class AuthService
         $user->roles()->attach($userRole);
       }
 
-      // Generate email verification token
-      $this->sendEmailVerification($user);
+      // Send email verification
+      $this->emailVerificationService->sendVerificationEmail($user);
 
       return $user;
     });
@@ -114,9 +121,7 @@ class AuthService
    */
   public function sendEmailVerification(User $user): void
   {
-    // We'll implement this in the email verification step
-    // For now, we'll just mark it as a placeholder
-    $user->sendEmailVerificationNotification();
+    $this->emailVerificationService->sendVerificationEmail($user);
   }
 
   /**

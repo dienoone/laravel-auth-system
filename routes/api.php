@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\Auth\EmailVerificationController;
 use App\Http\Controllers\Api\Auth\LoginController;
 use App\Http\Controllers\Api\Auth\LogoutController;
 use App\Http\Controllers\Api\Auth\RegisterController;
@@ -16,12 +17,19 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('auth')->group(function () {
     Route::post('/register', [RegisterController::class, 'register']);
     Route::post('/login', [LoginController::class, 'login']);
+
+    // Email verification
+    Route::post('/email/verify', [EmailVerificationController::class, 'verify']);
 });
 
 // Protected auth routes
 Route::middleware('auth:sanctum')->prefix('auth')->group(function () {
     Route::post('/logout', [LogoutController::class, 'logout']);
     Route::post('/logout-all', [LogoutController::class, 'logoutAll']);
+
+    // Email verification (authenticated)
+    Route::post('/email/resend', [EmailVerificationController::class, 'resend']);
+    Route::get('/email/status', [EmailVerificationController::class, 'status']);
 });
 
 // Protected user routes
@@ -33,4 +41,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/', [ProfileController::class, 'update']); // Alternative for form-data
         Route::delete('/avatar', [ProfileController::class, 'deleteAvatar']);
     });
+});
+
+// Routes that require verified email
+Route::middleware(['auth:sanctum', 'verified'])->group(function () {
+    // Add routes that require verified email here
 });

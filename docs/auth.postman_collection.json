@@ -1,0 +1,1908 @@
+{
+	"info": {
+		"_postman_id": "3fbffe4c-5936-4616-bc4d-c2008c32dc02",
+		"name": "auth",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29304742",
+		"_collection_link": "https://lunar-trinity-871616.postman.co/workspace/laravel_auth_api~f9fdd6eb-8235-4a06-8dab-69c665e93670/collection/29304742-3fbffe4c-5936-4616-bc4d-c2008c32dc02?action=share&source=collection_link&creator=29304742"
+	},
+	"item": [
+		{
+			"name": "roles",
+			"item": [
+				{
+					"name": "admin",
+					"item": [
+						{
+							"name": "get all roles",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{DOMAIN}}/api/admin/roles",
+									"host": [
+										"{{DOMAIN}}"
+									],
+									"path": [
+										"api",
+										"admin",
+										"roles"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create role",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Editor\",\n    \"slug\": \"editor\",\n    \"description\": \"Can edit content\",\n    \"permissions\": [6, 7]\n  }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{DOMAIN}}/api/admin/roles",
+									"host": [
+										"{{DOMAIN}}"
+									],
+									"path": [
+										"api",
+										"admin",
+										"roles"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "assign role to user",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"roles\": [1, 3]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{DOMAIN}}/api/admin/users/2/roles",
+									"host": [
+										"{{DOMAIN}}"
+									],
+									"path": [
+										"api",
+										"admin",
+										"users",
+										"2",
+										"roles"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "permissions",
+			"item": [
+				{
+					"name": "check permissions",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"permissions\": [\n        \"posts.edit\",\n        \"posts.delete\",\n        \"users.view\"\n    ],\n    \"check_type\": \"any\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{DOMAIN}}/api/auth/permissions/check",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"permissions",
+								"check"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get user permissions",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{DOMAIN}}/api/auth/permissions",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"permissions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get permissions by category",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{DOMAIN}}/api/admin/permissions?category=posts",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"permissions"
+							],
+							"query": [
+								{
+									"key": "category",
+									"value": "posts"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "social auth",
+			"item": [
+				{
+					"name": "get redirect url",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{DOMAIN}}/api/auth/google",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"google"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "handle callback with code",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"code\": \"authorization-code-from-provider\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{DOMAIN}}/api/auth/google/callback",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"google",
+								"callback"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "mobile authentication",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"access_token\": \"access-token-from-mobile-sdk\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{DOMAIN}}/api/auth/google/mobile",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"google",
+								"mobile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get linked providers",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{DOMAIN}}/api/auth/social/providers",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"social",
+								"providers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "link social account",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"provider\": \"google\",\n    \"access_token\": \"social-access-token\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{DOMAIN}}/api/auth/social/link",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"social",
+								"link"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "unlink social account",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"provider\": \"google\",\n    \"access_token\": \"social-access-token\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{DOMAIN}}/api/auth/social/google",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"social",
+								"google"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "2fa",
+			"item": [
+				{
+					"name": "enable 2fa",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"password\": \"YourCurrentPassword\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{DOMAIN}}/api/auth/2fa/enable",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"2fa",
+								"enable"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "confirm enable 2fa",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"code\": \"123456\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{DOMAIN}}/api/auth/2fa/confirm",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"2fa",
+								"confirm"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login with 2FA",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"two_factor_token\": \"token-from-step-1\",\n    \"code\": \"123456\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{DOMAIN}}/api/auth/2fa/verify",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"2fa",
+								"verify"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "create new user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Parse the response JSON to extract the token",
+							"var jsonData = pm.response.json();",
+							"var token = jsonData.data.token;",
+							"",
+							"// Update the environment variable with the new token",
+							"pm.globals.set(\"TOKEN\", token);"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"John Doe\",\n    \"username\": \"johndoe\",\n    \"email\": \"john@example.com\",\n    \"password\": \"P@ssw0rd123!\",\n    \"password_confirmation\": \"P@ssw0rd123!\",\n    \"phone\": \"+1234567890\"\n  }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DOMAIN}}/api/auth/register",
+					"host": [
+						"{{DOMAIN}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"register"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "create new user",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"John Doe\",\n    \"username\": \"hello\",\n    \"email\": \"hello@example.com\",\n    \"password\": \"P@ssw0rd123!\",\n    \"password_confirmation\": \"P@ssw0rd123!\",\n    \"phone\": \"+1234567890\"\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{DOMAIN}}/api/auth/register",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"register"
+							]
+						}
+					},
+					"status": "Created",
+					"code": 201,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Host",
+							"value": "127.0.0.1:8000"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						},
+						{
+							"key": "X-Powered-By",
+							"value": "PHP/8.4.1"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, private"
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 24 Sep 2025 05:47:32 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Vary",
+							"value": "Origin"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": true,\n    \"message\": \"Registration successful. Please check your email for verification.\",\n    \"data\": {\n        \"user\": {\n            \"id\": 6,\n            \"name\": \"John Doe\",\n            \"username\": \"hello\",\n            \"email\": \"hello@example.com\",\n            \"avatar\": null,\n            \"phone\": \"+1234567890\",\n            \"email_verified\": false,\n            \"two_factor_enabled\": null,\n            \"roles\": [\n                {\n                    \"id\": 3,\n                    \"name\": \"User\",\n                    \"slug\": \"user\"\n                }\n            ],\n            \"permissions\": [\n                {\n                    \"id\": 5,\n                    \"name\": \"View Posts\",\n                    \"slug\": \"view-posts\"\n                },\n                {\n                    \"id\": 6,\n                    \"name\": \"Create Posts\",\n                    \"slug\": \"create-posts\"\n                },\n                {\n                    \"id\": 7,\n                    \"name\": \"Edit Posts\",\n                    \"slug\": \"edit-posts\"\n                }\n            ]\n        },\n        \"token\": \"2|0FNvSTSdqMwyqm84MEjGzYIyN0ruS5y2krrKQdnZ9abbcc0d\",\n        \"token_type\": \"Bearer\"\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "update profile",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "5|JVjPAUx8pm4vLJyG5WzxYJA50Dj4gdcJZZ3TgjHZ4ba4b5a1",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"hello\",\n    \"phone\": \"+1234567890\"\n  }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DOMAIN}}/api/profile",
+					"host": [
+						"{{DOMAIN}}"
+					],
+					"path": [
+						"api",
+						"profile"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update profile with avatar",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "5|JVjPAUx8pm4vLJyG5WzxYJA50Dj4gdcJZZ3TgjHZ4ba4b5a1",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "name",
+							"value": "hello updated",
+							"type": "text"
+						},
+						{
+							"key": "avatar",
+							"type": "file",
+							"src": "/home/noone/Documents/296fe121-5dfa-43f4-98b5-db50019738a7.jpg"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{DOMAIN}}/api/profile",
+					"host": [
+						"{{DOMAIN}}"
+					],
+					"path": [
+						"api",
+						"profile"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete avatar",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "5|JVjPAUx8pm4vLJyG5WzxYJA50Dj4gdcJZZ3TgjHZ4ba4b5a1",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{DOMAIN}}/api/profile/avatar",
+					"host": [
+						"{{DOMAIN}}"
+					],
+					"path": [
+						"api",
+						"profile",
+						"avatar"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Parse the response JSON to extract the token",
+							"var jsonData = pm.response.json();",
+							"var token = jsonData.data.token;",
+							"",
+							"// Update the environment variable with the new token",
+							"pm.globals.set(\"TOKEN\", token);"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"login\": \"johndoe\",\n    \"password\": \"NewSecurePass123!\"\n  }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DOMAIN}}/api/auth/login",
+					"host": [
+						"{{DOMAIN}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "create new user Copy",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"login\": \"john@example.com\",\n    \"password\": \"P@ssw0rd123!\"\n  }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{DOMAIN}}/api/auth/login",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Host",
+							"value": "127.0.0.1:8000"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						},
+						{
+							"key": "X-Powered-By",
+							"value": "PHP/8.4.1"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, private"
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 24 Sep 2025 05:58:17 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Vary",
+							"value": "Origin"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": true,\n    \"message\": \"Login successful.\",\n    \"data\": {\n        \"user\": {\n            \"id\": 5,\n            \"name\": \"John Doe\",\n            \"username\": \"johndoe\",\n            \"email\": \"john@example.com\",\n            \"avatar\": null,\n            \"phone\": \"+1234567890\",\n            \"email_verified\": false,\n            \"two_factor_enabled\": false,\n            \"roles\": [\n                {\n                    \"id\": 3,\n                    \"name\": \"User\",\n                    \"slug\": \"user\"\n                }\n            ],\n            \"permissions\": [\n                {\n                    \"id\": 5,\n                    \"name\": \"View Posts\",\n                    \"slug\": \"view-posts\"\n                },\n                {\n                    \"id\": 6,\n                    \"name\": \"Create Posts\",\n                    \"slug\": \"create-posts\"\n                },\n                {\n                    \"id\": 7,\n                    \"name\": \"Edit Posts\",\n                    \"slug\": \"edit-posts\"\n                }\n            ]\n        },\n        \"token\": \"3|hFh1K15ft9rR221lEBmqShVJsgqy8AEe6MEIMdrK0ce1533d\",\n        \"token_type\": \"Bearer\"\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "logout",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "4|Jz6uTBcZWdDOy6Ikbx0c4owxkSf1frFSt0WU7KxX5c6992db",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{DOMAIN}}/api/auth/logout",
+					"host": [
+						"{{DOMAIN}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"logout"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "logout",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{DOMAIN}}/api/auth/logout",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Host",
+							"value": "127.0.0.1:8000"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						},
+						{
+							"key": "X-Powered-By",
+							"value": "PHP/8.4.1"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, private"
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 24 Sep 2025 06:00:11 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Vary",
+							"value": "Origin"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": true,\n    \"message\": \"Logged out successfully.\"\n}"
+				}
+			]
+		},
+		{
+			"name": "logout-all",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "4|Jz6uTBcZWdDOy6Ikbx0c4owxkSf1frFSt0WU7KxX5c6992db",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{DOMAIN}}/api/auth/logout-all",
+					"host": [
+						"{{DOMAIN}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"logout-all"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "logout",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{DOMAIN}}/api/auth/logout",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Host",
+							"value": "127.0.0.1:8000"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						},
+						{
+							"key": "X-Powered-By",
+							"value": "PHP/8.4.1"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, private"
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 24 Sep 2025 06:00:11 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Vary",
+							"value": "Origin"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": true,\n    \"message\": \"Logged out successfully.\"\n}"
+				}
+			]
+		},
+		{
+			"name": "resend email verification",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{DOMAIN}}/api/auth/email/resend",
+					"host": [
+						"{{DOMAIN}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"email",
+						"resend"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "logout",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{DOMAIN}}/api/auth/logout",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Host",
+							"value": "127.0.0.1:8000"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						},
+						{
+							"key": "X-Powered-By",
+							"value": "PHP/8.4.1"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, private"
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 24 Sep 2025 06:00:11 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Vary",
+							"value": "Origin"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": true,\n    \"message\": \"Logged out successfully.\"\n}"
+				}
+			]
+		},
+		{
+			"name": "verify email",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"token\": \"jGF4qezY7tlUtcIBMzQg1HOLaAlrmrIGWPvbL83w0NZ8OgJUaX15NoDSfFaxGcJ1\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DOMAIN}}/api/auth/email/verify",
+					"host": [
+						"{{DOMAIN}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"email",
+						"verify"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "logout",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{DOMAIN}}/api/auth/logout",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Host",
+							"value": "127.0.0.1:8000"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						},
+						{
+							"key": "X-Powered-By",
+							"value": "PHP/8.4.1"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, private"
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 24 Sep 2025 06:00:11 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Vary",
+							"value": "Origin"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": true,\n    \"message\": \"Logged out successfully.\"\n}"
+				}
+			]
+		},
+		{
+			"name": "forgot password",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"john@example.com\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DOMAIN}}/api/auth/password/forgot",
+					"host": [
+						"{{DOMAIN}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"password",
+						"forgot"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "logout",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{DOMAIN}}/api/auth/logout",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Host",
+							"value": "127.0.0.1:8000"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						},
+						{
+							"key": "X-Powered-By",
+							"value": "PHP/8.4.1"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, private"
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 24 Sep 2025 06:00:11 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Vary",
+							"value": "Origin"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": true,\n    \"message\": \"Logged out successfully.\"\n}"
+				}
+			]
+		},
+		{
+			"name": "validate reset token",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"token\": \"W5bdVfigNNZuFnBoARpbUVs3tsT3KbcLDpxYu7C9W34aN2xoRFUn7DQZwZwB8lem\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DOMAIN}}/api/auth/password/validate-token",
+					"host": [
+						"{{DOMAIN}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"password",
+						"validate-token"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "logout",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{DOMAIN}}/api/auth/logout",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Host",
+							"value": "127.0.0.1:8000"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						},
+						{
+							"key": "X-Powered-By",
+							"value": "PHP/8.4.1"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, private"
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 24 Sep 2025 06:00:11 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Vary",
+							"value": "Origin"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": true,\n    \"message\": \"Logged out successfully.\"\n}"
+				}
+			]
+		},
+		{
+			"name": "reset password",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"token\": \"W5bdVfigNNZuFnBoARpbUVs3tsT3KbcLDpxYu7C9W34aN2xoRFUn7DQZwZwB8lem\",\n    \"password\": \"NewSecurePass123!\",\n    \"password_confirmation\": \"NewSecurePass123!\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DOMAIN}}/api/auth/password/reset",
+					"host": [
+						"{{DOMAIN}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"password",
+						"reset"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "logout",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{DOMAIN}}/api/auth/logout",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Host",
+							"value": "127.0.0.1:8000"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						},
+						{
+							"key": "X-Powered-By",
+							"value": "PHP/8.4.1"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, private"
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 24 Sep 2025 06:00:11 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Vary",
+							"value": "Origin"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": true,\n    \"message\": \"Logged out successfully.\"\n}"
+				}
+			]
+		},
+		{
+			"name": "reset password Copy",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"current_password\": \"NewSecurePass123!\",\n    \"password\": \"P@ssw0rd123!\",\n    \"password_confirmation\": \"P@ssw0rd123!\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DOMAIN}}/api/auth/password",
+					"host": [
+						"{{DOMAIN}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"password"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "logout",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{DOMAIN}}/api/auth/logout",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Host",
+							"value": "127.0.0.1:8000"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						},
+						{
+							"key": "X-Powered-By",
+							"value": "PHP/8.4.1"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, private"
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 24 Sep 2025 06:00:11 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Vary",
+							"value": "Origin"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": true,\n    \"message\": \"Logged out successfully.\"\n}"
+				}
+			]
+		},
+		{
+			"name": "profile",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "5|JVjPAUx8pm4vLJyG5WzxYJA50Dj4gdcJZZ3TgjHZ4ba4b5a1",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{DOMAIN}}/api/profile",
+					"host": [
+						"{{DOMAIN}}"
+					],
+					"path": [
+						"api",
+						"profile"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "profile",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{DOMAIN}}/api/profile",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"profile"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Host",
+							"value": "127.0.0.1:8000"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						},
+						{
+							"key": "X-Powered-By",
+							"value": "PHP/8.4.1"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, private"
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 24 Sep 2025 06:19:39 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Vary",
+							"value": "Origin"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": true,\n    \"message\": \"Profile retrieved successfully.\",\n    \"data\": {\n        \"user\": {\n            \"id\": 6,\n            \"name\": \"John Doe\",\n            \"username\": \"hello\",\n            \"email\": \"hello@example.com\",\n            \"avatar\": \"http://127.0.0.1:8000/images/default-avatar.png\",\n            \"phone\": \"+1234567890\",\n            \"email_verified\": false,\n            \"email_verified_at\": null,\n            \"two_factor_enabled\": false,\n            \"is_active\": true,\n            \"created_at\": \"2025-09-24T05:47:32.000000Z\",\n            \"updated_at\": \"2025-09-24T06:19:24.000000Z\"\n        },\n        \"roles\": [\n            {\n                \"id\": 3,\n                \"name\": \"User\",\n                \"slug\": \"user\"\n            }\n        ],\n        \"permissions\": [\n            {\n                \"id\": 5,\n                \"name\": \"View Posts\",\n                \"slug\": \"view-posts\"\n            },\n            {\n                \"id\": 6,\n                \"name\": \"Create Posts\",\n                \"slug\": \"create-posts\"\n            },\n            {\n                \"id\": 7,\n                \"name\": \"Edit Posts\",\n                \"slug\": \"edit-posts\"\n            }\n        ],\n        \"stats\": {\n            \"last_login_at\": \"2025-09-24T06:19:24.000000Z\",\n            \"last_login_ip\": \"127.0.0.1\",\n            \"account_age_days\": 0.022313048599537037,\n            \"is_locked\": false,\n            \"locked_until\": null\n        }\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "check verification status",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{TOKEN}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{DOMAIN}}/api/auth/email/status",
+					"host": [
+						"{{DOMAIN}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"email",
+						"status"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "profile",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{DOMAIN}}/api/profile",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"profile"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Host",
+							"value": "127.0.0.1:8000"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						},
+						{
+							"key": "X-Powered-By",
+							"value": "PHP/8.4.1"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-cache, private"
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 24 Sep 2025 06:19:39 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Vary",
+							"value": "Origin"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": true,\n    \"message\": \"Profile retrieved successfully.\",\n    \"data\": {\n        \"user\": {\n            \"id\": 6,\n            \"name\": \"John Doe\",\n            \"username\": \"hello\",\n            \"email\": \"hello@example.com\",\n            \"avatar\": \"http://127.0.0.1:8000/images/default-avatar.png\",\n            \"phone\": \"+1234567890\",\n            \"email_verified\": false,\n            \"email_verified_at\": null,\n            \"two_factor_enabled\": false,\n            \"is_active\": true,\n            \"created_at\": \"2025-09-24T05:47:32.000000Z\",\n            \"updated_at\": \"2025-09-24T06:19:24.000000Z\"\n        },\n        \"roles\": [\n            {\n                \"id\": 3,\n                \"name\": \"User\",\n                \"slug\": \"user\"\n            }\n        ],\n        \"permissions\": [\n            {\n                \"id\": 5,\n                \"name\": \"View Posts\",\n                \"slug\": \"view-posts\"\n            },\n            {\n                \"id\": 6,\n                \"name\": \"Create Posts\",\n                \"slug\": \"create-posts\"\n            },\n            {\n                \"id\": 7,\n                \"name\": \"Edit Posts\",\n                \"slug\": \"edit-posts\"\n            }\n        ],\n        \"stats\": {\n            \"last_login_at\": \"2025-09-24T06:19:24.000000Z\",\n            \"last_login_ip\": \"127.0.0.1\",\n            \"account_age_days\": 0.022313048599537037,\n            \"is_locked\": false,\n            \"locked_until\": null\n        }\n    }\n}"
+				}
+			]
+		}
+	]
+}

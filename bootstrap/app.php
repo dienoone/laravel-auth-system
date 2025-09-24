@@ -12,8 +12,7 @@ return Application::configure(basePath: dirname(__DIR__))
         api: __DIR__ . '/../routes/api.php',
         commands: __DIR__ . '/../routes/console.php',
         health: '/up',
-    )
-    ->withMiddleware(function (Middleware $middleware) {
+    )->withMiddleware(function (Middleware $middleware) {
         $middleware->api(prepend: [
             EnsureFrontendRequestsAreStateful::class,
         ]);
@@ -22,12 +21,12 @@ return Application::configure(basePath: dirname(__DIR__))
             'abilities' => \Laravel\Sanctum\Http\Middleware\CheckAbilities::class,
             'ability' => \Laravel\Sanctum\Http\Middleware\CheckForAnyAbility::class,
             'verified' => \App\Http\Middleware\EnsureEmailIsVerified::class,
+            'role' => \App\Http\Middleware\CheckRole::class,
+            'permission' => \App\Http\Middleware\CheckPermission::class,
         ]);
-    })
-    ->withSchedule(function (Schedule $schedule) {
+    })->withSchedule(function (Schedule $schedule) {
         // Schedule token cleanup
         $schedule->command('auth:clean-tokens')->dailyAt('02:00');
-    })
-    ->withExceptions(function (Exceptions $exceptions) {
+    })->withExceptions(function (Exceptions $exceptions) {
         //
     })->create();

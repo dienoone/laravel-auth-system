@@ -1,12 +1,15 @@
 <?php
 
-use App\Http\Controllers\Api\Auth\PasswordController;
 use App\Http\Controllers\Api\Auth\EmailVerificationController;
 use App\Http\Controllers\Api\Auth\LoginController;
 use App\Http\Controllers\Api\Auth\LogoutController;
+use App\Http\Controllers\Api\Auth\PasswordController;
 use App\Http\Controllers\Api\Auth\PasswordResetController;
 use App\Http\Controllers\Api\Auth\RegisterController;
 use App\Http\Controllers\Api\Auth\ProfileController;
+use App\Http\Controllers\Api\Admin\RoleController;
+use App\Http\Controllers\Api\Admin\PermissionController;
+use App\Http\Controllers\Api\Admin\UserRoleController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -53,7 +56,29 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 });
 
-// Routes that require verified email
-Route::middleware(['auth:sanctum', 'verified'])->group(function () {
-    // Add routes that require verified email here
+// Admin routes (require authentication and permissions)
+Route::middleware(['auth:sanctum', 'permission:manage-roles,manage-permissions'])->prefix('admin')->group(function () {
+    // Role management
+    Route::apiResource('roles', RoleController::class);
+
+    // Permission management
+    Route::apiResource('permissions', PermissionController::class);
+
+    // User role management
+    Route::prefix('users/{user}')->group(function () {
+        Route::get('/roles', [UserRoleController::class, 'show']);
+        Route::put('/roles', [UserRoleController::class, 'syncRoles']);
+        Route::post('/roles', [UserRoleController::class, 'addRole']);
+        Route::delete('/roles', [UserRoleController::class, 'removeRole']);
+        Route::put('/permissions', [UserRoleController::class, 'syncPermissions']);
+    });
+});
+
+// Example of role-based routes
+Route::middleware(['auth:sanctum', 'role:admin'])->prefix('admin-only')->group(function () {
+    // Admin only routes
+});
+
+Route::middleware(['auth:sanctum', 'role:admin,moderator'])->prefix('moderator')->group(function () {
+    // Admin or moderator routes
 });

@@ -88,8 +88,55 @@ class AuthService
       ]);
     }
 
-    // Reset failed attempts and update login info
+    // Reset failed attempts
     $user->resetFailedAttempts();
+
+    // Check if 2FA is enabled
+    if ($user->two_factor_enabled) {
+      // Return partial auth data for 2FA verification
+      return [
+        'requires_two_factor' => true,
+        'two_factor_token' => $this->createTwoFactorToken($user),
+        'user_id' => $user->id,
+      ];
+    }
+
+    // Update login info
+    $user->updateLastLogin($ipAddress);
+
+    // Create token
+    $token = $this->createToken($user, $deviceName);
+
+    return [
+      'requires_two_factor' => false,
+      'user' => $this->getUserData($user),
+      'token' => $token,
+      'token_type' => 'Bearer'
+    ];
+  }
+
+  /**
+   * Create temporary token for 2FA verification
+   */
+  protected function createTwoFactorToken(User $user): string
+  {
+    return $user->createToken('2fa-verification', ['2fa-verify'], now()->addMinutes(10))->plainTextToken;
+  }
+
+  /**
+   * Complete login with 2FA
+   */
+  public function verifyTwoFactor(User $user, string $code, string $ipAddress, string $deviceName = 'web'): array
+  {
+    $twoFactorService = app(TwoFactorService::class);
+
+    if (!$twoFactorService->verify($user, $code)) {
+      throw ValidationException::withMessages([
+        'code' => ['Invalid two-factor authentication code.'],
+      ]);
+    }
+
+    // Update login info
     $user->updateLastLogin($ipAddress);
 
     // Create token

@@ -29,11 +29,31 @@ class PermissionController extends Controller
     public function index(Request $request): JsonResponse
     {
         try {
-            $filters = $request->only(['search']);
-            $permissions = $this->permissionService->getAllPermissions($filters);
+            $filters = $request->only(['search', 'category']);
+
+            $query = Permission::query();
+
+            if (isset($filters['search'])) {
+                $query->where(function ($q) use ($filters) {
+                    $q->where('name', 'like', '%' . $filters['search'] . '%')
+                        ->orWhere('slug', 'like', '%' . $filters['search'] . '%')
+                        ->orWhere('description', 'like', '%' . $filters['search'] . '%');
+                });
+            }
+
+            if (isset($filters['category'])) {
+                $query->where('category', $filters['category']);
+            }
+
+            $permissions = $query->orderBy('category')->orderBy('name')->get();
+            $groupedPermissions = $permissions->groupBy('category');
+            $categories = Permission::getCategories();
 
             return $this->successResponse('Permissions retrieved successfully.', [
-                'permissions' => $permissions
+                'permissions' => $permissions,
+                'grouped_permissions' => $groupedPermissions,
+                'categories' => $categories,
+                'total' => $permissions->count()
             ]);
         } catch (Exception $e) {
             Log::error('Failed to retrieve permissions: ' . $e->getMessage());

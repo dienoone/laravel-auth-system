@@ -4,12 +4,15 @@ namespace App\Http\Controllers\Api\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Auth\TwoFactor\VerifyTwoFactorRequest;
+use App\Models\User;
 use App\Services\AuthService;
 use App\Traits\ApiResponseTrait;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\ValidationException;
+use Laravel\Sanctum\PersonalAccessToken;
 use Exception;
 
 class LoginController extends Controller
@@ -48,6 +51,13 @@ class LoginController extends Controller
             // Clear rate limiter on successful login
             RateLimiter::clear($this->throttleKey($request));
 
+            if ($loginData['requires_two_factor']) {
+                return $this->successResponse('Two-factor authentication required.', [
+                    'requires_two_factor' => true,
+                    'two_factor_token' => $loginData['two_factor_token'],
+                ]);
+            }
+
             return $this->successResponse('Login successful.', $loginData);
         } catch (ValidationException $e) {
             // Hit rate limiter on failed login
@@ -63,6 +73,48 @@ class LoginController extends Controller
 
             return $this->errorResponse(
                 'Login failed. Please try again.',
+                null,
+                500
+            );
+        }
+    }
+
+    /**
+     * Verify two-factor authentication
+     */
+    public function verifyTwoFactor(VerifyTwoFactorRequest $request): JsonResponse
+    {
+        try {
+            // Verify the 2FA token
+            $token = PersonalAccessToken::findToken($request->two_factor_token);
+
+            if (!$token || !$token->can('2fa-verify')) {
+                return $this->errorResponse('Invalid or expired two-factor token.');
+            }
+
+            $user = $token->tokenable;
+
+            // Verify the 2FA code
+            $authData = $this->authService->verifyTwoFactor(
+                $user,
+                $request->code,
+                $request->ip(),
+                $request->input('device_name', $request->header('User-Agent', 'web'))
+            );
+
+            // Delete the 2FA token
+            $token->delete();
+
+            return $this->successResponse('Login successful.', $authData);
+        } catch (ValidationException $e) {
+            throw $e;
+        } catch (Exception $e) {
+            Log::error('2FA verification failed: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return $this->errorResponse(
+                'Two-factor verification failed. Please try again.',
                 null,
                 500
             );

@@ -12,7 +12,7 @@ class PermissionRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()->hasPermission('manage-permissions');
+        return $this->user()->hasPermission('permissions.manage');
     }
 
     /**
@@ -34,7 +34,13 @@ class PermissionRequest extends FormRequest
                 'string',
                 'max:255',
                 Rule::unique('permissions', 'slug')->ignore($permissionId),
-                'regex:/^[a-z0-9-]+$/'
+                'regex:/^[a-z0-9\-\.\*]+$/'
+            ],
+            'category' => [
+                'required',
+                'string',
+                'max:50',
+                'regex:/^[a-z0-9\-]+$/'
             ],
             'description' => ['nullable', 'string', 'max:500'],
         ];
@@ -49,7 +55,9 @@ class PermissionRequest extends FormRequest
             'name.required' => 'Permission name is required.',
             'name.unique' => 'A permission with this name already exists.',
             'slug.unique' => 'A permission with this slug already exists.',
-            'slug.regex' => 'Slug can only contain lowercase letters, numbers, and hyphens.',
+            'slug.regex' => 'Slug can only contain lowercase letters, numbers, hyphens, dots, and asterisks.',
+            'category.required' => 'Permission category is required.',
+            'category.regex' => 'Category can only contain lowercase letters, numbers, and hyphens.',
         ];
     }
 }

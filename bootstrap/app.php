@@ -23,6 +23,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'verified' => \App\Http\Middleware\EnsureEmailIsVerified::class,
             'role' => \App\Http\Middleware\CheckRole::class,
             'permission' => \App\Http\Middleware\CheckPermission::class,
+            'permissions' => \App\Http\Middleware\CheckMultiplePermissions::class,
+            'resource.permission' => \App\Http\Middleware\CheckResourcePermission::class,
+            '2fa' => \App\Http\Middleware\RequireTwoFactor::class,
         ]);
     })->withSchedule(function (Schedule $schedule) {
         // Schedule token cleanup

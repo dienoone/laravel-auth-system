@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 use App\Services\EmailVerificationService;
+use App\Traits\HasPermissions;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -13,7 +14,7 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, HasPermissions;
 
     /**
      * The attributes that are mass assignable.
@@ -115,10 +116,19 @@ class User extends Authenticatable
 
     /**
      * Check if user has a specific permission
+     *
+     *
+     * Override the hasPermission method to include wildcard check
      */
     public function hasPermission(string $permission): bool
     {
-        return $this->getAllPermissions()->contains('slug', $permission);
+        // First check regular permissions
+        if ($this->getAllPermissions()->contains('slug', $permission)) {
+            return true;
+        }
+
+        // Then check wildcard permissions
+        return $this->hasWildcardPermission($permission);
     }
 
     /**

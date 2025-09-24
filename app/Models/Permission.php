@@ -13,8 +13,33 @@ class Permission extends Model
     protected $fillable = [
         'name',
         'slug',
+        'category',
         'description'
     ];
+
+    /**
+     * Get permissions grouped by category
+     */
+    public static function getGroupedByCategory()
+    {
+        return self::all()->groupBy('category');
+    }
+
+    /**
+     * Get available categories
+     */
+    public static function getCategories(): array
+    {
+        return self::distinct('category')->pluck('category')->toArray();
+    }
+
+    /**
+     * Scope to filter by category
+     */
+    public function scopeInCategory($query, string $category)
+    {
+        return $query->where('category', $category);
+    }
 
     /**
      * Get the permission's roles

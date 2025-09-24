@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\Api\Auth\PasswordController;
 use App\Http\Controllers\Api\Auth\EmailVerificationController;
 use App\Http\Controllers\Api\Auth\LoginController;
 use App\Http\Controllers\Api\Auth\LogoutController;
+use App\Http\Controllers\Api\Auth\PasswordResetController;
 use App\Http\Controllers\Api\Auth\RegisterController;
 use App\Http\Controllers\Api\Auth\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -20,6 +22,11 @@ Route::prefix('auth')->group(function () {
 
     // Email verification
     Route::post('/email/verify', [EmailVerificationController::class, 'verify']);
+
+    // Password reset
+    Route::post('/password/forgot', [PasswordResetController::class, 'forgotPassword']);
+    Route::post('/password/validate-token', [PasswordResetController::class, 'validateToken']);
+    Route::post('/password/reset', [PasswordResetController::class, 'resetPassword']);
 });
 
 // Protected auth routes
@@ -30,6 +37,9 @@ Route::middleware('auth:sanctum')->prefix('auth')->group(function () {
     // Email verification (authenticated)
     Route::post('/email/resend', [EmailVerificationController::class, 'resend']);
     Route::get('/email/status', [EmailVerificationController::class, 'status']);
+
+    // Password update
+    Route::put('/password', [PasswordController::class, 'update']);
 });
 
 // Protected user routes

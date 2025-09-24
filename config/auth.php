@@ -112,4 +112,24 @@ return [
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
 
+    // Add this to the existing auth config array
+    'rate_limiting' => [
+        'login' => [
+            'max_attempts' => env('LOGIN_MAX_ATTEMPTS', 5),
+            'decay_minutes' => env('LOGIN_DECAY_MINUTES', 15),
+        ],
+        'password_reset' => [
+            'max_attempts' => env('PASSWORD_RESET_MAX_ATTEMPTS', 3),
+            'decay_minutes' => env('PASSWORD_RESET_DECAY_MINUTES', 60),
+        ],
+        'email_verification' => [
+            'max_attempts' => env('EMAIL_VERIFY_MAX_ATTEMPTS', 5),
+            'decay_minutes' => env('EMAIL_VERIFY_DECAY_MINUTES', 60),
+        ],
+        'api' => [
+            'max_attempts' => env('API_MAX_ATTEMPTS', 60),
+            'decay_minutes' => env('API_DECAY_MINUTES', 1),
+        ],
+    ],
+
 ];

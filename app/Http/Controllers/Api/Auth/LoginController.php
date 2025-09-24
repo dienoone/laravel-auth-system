@@ -7,23 +7,26 @@ use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\TwoFactor\VerifyTwoFactorRequest;
 use App\Models\User;
 use App\Services\AuthService;
+use App\Services\RateLimitService;
 use App\Traits\ApiResponseTrait;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\ValidationException;
 use Laravel\Sanctum\PersonalAccessToken;
 use Exception;
+use Illuminate\Support\Facades\RateLimiter;
 
 class LoginController extends Controller
 {
     use ApiResponseTrait;
 
     protected AuthService $authService;
+    protected RateLimitService $rateLimitService;
 
-    public function __construct(AuthService $authService)
+    public function __construct(AuthService $authService, RateLimitService $rateLimitService)
     {
         $this->authService = $authService;
+        $this->rateLimitService = $rateLimitService;
     }
 
     /**
@@ -31,25 +34,42 @@ class LoginController extends Controller
      */
     public function login(LoginRequest $request): JsonResponse
     {
-        // Rate limiting check
-        $this->ensureIsNotRateLimited($request);
+        $identifier = $request->input('login');
+        $ip = $request->ip();
+
+        // Check if login is rate limited
+        if ($this->rateLimitService->isLoginLimited($identifier, $ip)) {
+            $seconds = $this->rateLimitService->getLoginAvailableIn($identifier, $ip);
+
+            // Check for suspicious activity
+            $this->rateLimitService->checkSuspiciousActivity($ip);
+
+            throw ValidationException::withMessages([
+                'login' => [
+                    trans('auth.throttle', [
+                        'seconds' => $seconds,
+                        'minutes' => ceil($seconds / 60),
+                    ]),
+                ],
+            ])->status(429);
+        }
 
         try {
             // Get credentials
             $credentials = [
-                'login' => $request->input('login'),
+                'login' => $identifier,
                 'password' => $request->input('password'),
             ];
 
             // Attempt login
             $loginData = $this->authService->login(
                 $credentials,
-                $request->ip(),
+                $ip,
                 $request->input('device_name', $request->header('User-Agent', 'web'))
             );
 
             // Clear rate limiter on successful login
-            RateLimiter::clear($this->throttleKey($request));
+            $this->rateLimitService->clearLogin($identifier, $ip);
 
             if ($loginData['requires_two_factor']) {
                 return $this->successResponse('Two-factor authentication required.', [
@@ -61,15 +81,18 @@ class LoginController extends Controller
             return $this->successResponse('Login successful.', $loginData);
         } catch (ValidationException $e) {
             // Hit rate limiter on failed login
-            RateLimiter::hit($this->throttleKey($request), 300); // 5 minutes
+            $this->rateLimitService->hitLogin($identifier, $ip);
 
             throw $e;
         } catch (Exception $e) {
             Log::error('Login failed: ' . $e->getMessage(), [
-                'login' => $request->input('login'),
-                'ip' => $request->ip(),
+                'login' => $identifier,
+                'ip' => $ip,
                 'trace' => $e->getTraceAsString()
             ]);
+
+            // Hit rate limiter on error
+            $this->rateLimitService->hitLogin($identifier, $ip);
 
             return $this->errorResponse(
                 'Login failed. Please try again.',

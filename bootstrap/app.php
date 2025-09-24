@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )->withMiddleware(function (Middleware $middleware) {
         $middleware->api(prepend: [
+            \App\Http\Middleware\BlockedIpCheck::class,
             EnsureFrontendRequestsAreStateful::class,
         ]);
 
@@ -26,7 +27,11 @@ return Application::configure(basePath: dirname(__DIR__))
             'permissions' => \App\Http\Middleware\CheckMultiplePermissions::class,
             'resource.permission' => \App\Http\Middleware\CheckResourcePermission::class,
             '2fa' => \App\Http\Middleware\RequireTwoFactor::class,
+            'throttle.advanced' => \App\Http\Middleware\AdvancedThrottle::class,
         ]);
+
+        // Configure rate limiting for routes
+        $middleware->throttleApi('api', 'throttle:api');
     })->withSchedule(function (Schedule $schedule) {
         // Schedule token cleanup
         $schedule->command('auth:clean-tokens')->dailyAt('02:00');

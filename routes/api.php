@@ -1,7 +1,5 @@
 <?php
 
-use App\Http\Controllers\Api\Auth\SocialAuthController;
-use App\Http\Controllers\Api\Auth\PermissionCheckController;
 use App\Http\Controllers\Api\Auth\EmailVerificationController;
 use App\Http\Controllers\Api\Auth\LoginController;
 use App\Http\Controllers\Api\Auth\LogoutController;
@@ -9,10 +7,13 @@ use App\Http\Controllers\Api\Auth\PasswordController;
 use App\Http\Controllers\Api\Auth\PasswordResetController;
 use App\Http\Controllers\Api\Auth\RegisterController;
 use App\Http\Controllers\Api\Auth\ProfileController;
+use App\Http\Controllers\Api\Auth\SocialAuthController;
+use App\Http\Controllers\Api\Auth\TwoFactorController;
+use App\Http\Controllers\Api\Auth\PermissionCheckController;
 use App\Http\Controllers\Api\Admin\RoleController;
 use App\Http\Controllers\Api\Admin\PermissionController;
 use App\Http\Controllers\Api\Admin\UserRoleController;
-use App\Http\Controllers\Api\Auth\TwoFactorController;
+use App\Http\Controllers\Api\Admin\SecurityMonitoringController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -21,63 +22,98 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
-// Public auth routes
+// Public auth routes with specific rate limiting
 Route::prefix('auth')->group(function () {
-    Route::post('/register', [RegisterController::class, 'register']);
+    // Strict rate limiting for authentication endpoints
+    Route::post('/register', [RegisterController::class, 'register'])
+        ->middleware('throttle.advanced:register,3,60'); // 3 attempts per hour
+
     Route::post('/login', [LoginController::class, 'login']);
-    Route::post('/2fa/verify', [LoginController::class, 'verifyTwoFactor']);
+    // Login has its own rate limiting in controller
+
+    Route::post('/2fa/verify', [LoginController::class, 'verifyTwoFactor'])
+        ->middleware('throttle.advanced:2fa,10,15'); // 10 attempts per 15 minutes
 
     // Email verification
-    Route::post('/email/verify', [EmailVerificationController::class, 'verify']);
+    Route::post('/email/verify', [EmailVerificationController::class, 'verify'])
+        ->middleware('throttle.advanced:email_verification,5,60');
 
-    // Password reset
-    Route::post('/password/forgot', [PasswordResetController::class, 'forgotPassword']);
-    Route::post('/password/validate-token', [PasswordResetController::class, 'validateToken']);
-    Route::post('/password/reset', [PasswordResetController::class, 'resetPassword']);
+    // Password reset with strict limiting
+    Route::middleware('throttle.advanced:password_reset,3,60')->group(function () {
+        Route::post('/password/forgot', [PasswordResetController::class, 'forgotPassword']);
+        Route::post('/password/validate-token', [PasswordResetController::class, 'validateToken']);
+        Route::post('/password/reset', [PasswordResetController::class, 'resetPassword']);
+    });
 
     // Social authentication
-    Route::get('/{provider}', [SocialAuthController::class, 'redirect'])
-        ->where('provider', 'google|github|facebook');
-    Route::get('/{provider}/callback', [SocialAuthController::class, 'callback'])
-        ->where('provider', 'google|github|facebook');
-    Route::post('/{provider}/callback', [SocialAuthController::class, 'callback'])
-        ->where('provider', 'google|github|facebook');
-    Route::post('/{provider}/mobile', [SocialAuthController::class, 'mobile'])
-        ->where('provider', 'google|github|facebook');
+    Route::middleware('throttle.advanced:social,10,1')->group(function () {
+        Route::get('/{provider}', [SocialAuthController::class, 'redirect'])
+            ->where('provider', 'google|github|facebook');
+        Route::get('/{provider}/callback', [SocialAuthController::class, 'callback'])
+            ->where('provider', 'google|github|facebook');
+        Route::post('/{provider}/callback', [SocialAuthController::class, 'callback'])
+            ->where('provider', 'google|github|facebook');
+        Route::post('/{provider}/mobile', [SocialAuthController::class, 'mobile'])
+            ->where('provider', 'google|github|facebook');
+    });
 });
 
 
-// Protected auth routes
-Route::middleware('auth:sanctum')->prefix('auth')->group(function () {
-    Route::post('/logout', [LogoutController::class, 'logout']);
-    Route::post('/logout-all', [LogoutController::class, 'logoutAll']);
+// Protected routes with standard API rate limiting
+Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
+    // Auth routes
+    Route::prefix('auth')->group(function () {
+        Route::post('/logout', [LogoutController::class, 'logout']);
+        Route::post('/logout-all', [LogoutController::class, 'logoutAll']);
 
-    // Email verification (authenticated)
-    Route::post('/email/resend', [EmailVerificationController::class, 'resend']);
-    Route::get('/email/status', [EmailVerificationController::class, 'status']);
+        // Email verification (authenticated)
+        Route::post('/email/resend', [EmailVerificationController::class, 'resend'])
+            ->middleware('throttle.advanced:email_resend,2,60'); // 2 per hour
+        Route::get('/email/status', [EmailVerificationController::class, 'status']);
 
-    // Password update
-    Route::put('/password', [PasswordController::class, 'update']);
+        // Password update
+        Route::put('/password', [PasswordController::class, 'update'])
+            ->middleware('throttle.advanced:password_update,3,60');
 
-    // Permission check
-    Route::post('/permissions/check', [PermissionCheckController::class, 'check']);
-    Route::get('/permissions', [PermissionCheckController::class, 'userPermissions']);
+        // Permission check
+        Route::post('/permissions/check', [PermissionCheckController::class, 'check']);
+        Route::get('/permissions', [PermissionCheckController::class, 'userPermissions']);
 
+        // 2FA management
+        Route::prefix('2fa')->group(function () {
+            Route::get('/status', [TwoFactorController::class, 'status']);
+            Route::post('/enable', [TwoFactorController::class, 'enable'])
+                ->middleware('throttle.advanced:2fa_setup,3,60');
+            Route::post('/confirm', [TwoFactorController::class, 'confirmEnable']);
+            Route::delete('/disable', [TwoFactorController::class, 'disable']);
+            Route::post('/recovery-codes', [TwoFactorController::class, 'regenerateRecoveryCodes'])
+                ->middleware('throttle.advanced:recovery_codes,1,60');
+        });
 
-    // Social account management
-    Route::post('/social/link', [SocialAuthController::class, 'link']);
-    Route::get('/social/providers', [SocialAuthController::class, 'linkedProviders']);
-    Route::delete('/social/{provider}', [SocialAuthController::class, 'unlink'])
-        ->where('provider', 'google|github|facebook');
-
-    // 2FA management
-    Route::prefix('2fa')->group(function () {
-        Route::get('/status', [TwoFactorController::class, 'status']);
-        Route::post('/enable', [TwoFactorController::class, 'enable']);
-        Route::post('/confirm', [TwoFactorController::class, 'confirmEnable']);
-        Route::delete('/disable', [TwoFactorController::class, 'disable']);
-        Route::post('/recovery-codes', [TwoFactorController::class, 'regenerateRecoveryCodes']);
+        // Social account management
+        Route::post('/social/link', [SocialAuthController::class, 'link']);
+        Route::get('/social/providers', [SocialAuthController::class, 'linkedProviders']);
+        Route::delete('/social/{provider}', [SocialAuthController::class, 'unlink'])
+            ->where('provider', 'google|github|facebook');
     });
+
+    // Profile routes
+    Route::prefix('profile')->group(function () {
+        Route::get('/', [ProfileController::class, 'show']);
+        Route::put('/', [ProfileController::class, 'update']);
+        Route::post('/', [ProfileController::class, 'update']);
+        Route::delete('/avatar', [ProfileController::class, 'deleteAvatar']);
+    });
+});
+
+// Admin security monitoring routes
+Route::middleware(['auth:sanctum', 'role:admin', 'throttle:api'])->prefix('admin/security')->group(function () {
+    Route::get('/dashboard', [SecurityMonitoringController::class, 'dashboard']);
+    Route::get('/blocked-ips', [SecurityMonitoringController::class, 'blockedIps']);
+    Route::post('/block-ip', [SecurityMonitoringController::class, 'blockIp']);
+    Route::delete('/unblock-ip', [SecurityMonitoringController::class, 'unblockIp']);
+    Route::get('/failed-logins', [SecurityMonitoringController::class, 'failedLogins']);
+    Route::post('/clear-lockout', [SecurityMonitoringController::class, 'clearUserLockout']);
 });
 
 // Protected user routes
@@ -91,8 +127,8 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 });
 
-// Admin routes (require authentication and permissions)
-Route::middleware(['auth:sanctum', 'permission:manage-roles,manage-permissions'])->prefix('admin')->group(function () {
+// Admin routes with moderate rate limiting
+Route::middleware(['auth:sanctum', 'permission:manage-roles,manage-permissions', 'throttle:api'])->prefix('admin')->group(function () {
     // Role management
     Route::apiResource('roles', RoleController::class);
 

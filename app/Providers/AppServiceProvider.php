@@ -3,6 +3,10 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Auth\Events\Failed;
+use Illuminate\Auth\Events\Lockout;
+use App\Listeners\LogSecurityEvent;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,6 +23,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Register event listeners
+        Event::listen(Failed::class, [LogSecurityEvent::class, 'handleFailedLogin']);
+        Event::listen(Lockout::class, [LogSecurityEvent::class, 'handleLockout']);
     }
 }
